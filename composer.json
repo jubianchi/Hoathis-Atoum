@@ -23,9 +23,9 @@
     },
     "require": {
         "atoum/atoum": "dev-master",
-        "hoa/math"   : "master",
-        "hoa/praspel": "master",
-        "hoa/realdom": "master"
+        "hoa/math"   : "dev-master",
+        "hoa/praspel": "dev-master",
+        "hoa/realdom": "dev-master"
     },
     "minimum-stability": "dev"
 }
