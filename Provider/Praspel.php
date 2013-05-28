@@ -63,7 +63,7 @@ from('Hoa')
 namespace Hoathis\Atoum\Provider {
 
 /**
- * Class \Hoathis\Atoum\Provider\Closure.
+ * Class \Hoathis\Atoum\Provider\Praspel.
  *
  * Praspel provider.
  *
@@ -101,7 +101,6 @@ class Praspel implements \mageekguy\atoum\test\provider {
         return new \Hoa\Praspel\Iterator\Sampler(
             \Hoa\Praspel::interprete('@requires ' . $description . ';')
                 ->getClause('requires'),
-            $maxData,
             \Hoa\Praspel\Iterator\Sampler::KEY_AS_VARIABLE_POSITION
         );
     }
