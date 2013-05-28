@@ -39,70 +39,69 @@ namespace {
 from('Hoa')
 
 /**
- * \Hoa\Math\Sampler\Random
+ * \Hoa\Praspel\Model\Specification
  */
--> import('Math.Sampler.Random')
-
-/**
- * \Hoa\Realdom
- */
--> import('Realdom.~')
-
-/**
- * \Hoa\Praspel
- */
--> import('Praspel.~')
-
-/**
- * \Hoa\Praspel\Iterator\Sampler
- */
--> import('Praspel.Iterator.Sampler');
+-> import('Praspel.Model.Specification');
 
 }
 
-namespace Hoathis\Atoum\Provider {
+namespace Hoathis\Atoum\Test\Asserter {
 
 /**
- * Class \Hoathis\Atoum\Provider\Praspel.
+ * Class \Hoathis\Atoum\Test\Asserter.
  *
- * Praspel provider.
+ * Praspel asserter. A simple wrapper around \Hoa\Praspel\Model\Specification.
  *
  * @author     Ivan Enderlin <ivan.enderlin@hoa-project.net>
  * @copyright  Copyright © 2007-2013 Ivan Enderlin.
  * @license    New BSD License
  */
 
-class Praspel implements \mageekguy\atoum\test\provider {
+class Praspel {
 
     /**
-     * Constructor.
+     * Specification.
+     *
+     * @var \Hoa\Praspel\Model\Specification object
+     */
+    protected $_specification = null;
+
+
+
+    /**
+     * Alias to \Hoa\Praspel\Model\Specification::getClause().
+     *
+     * @access  public
+     * @return  string  $name    Clause name.
+     * @return  \Hoa\Praspel\Model\Clause
+     */
+    public function __get ( $name ) {
+
+        return $this->_specification->getClause($name);
+    }
+
+    /**
+     * Reset the asserter, i.e. create a new fresh specification.
+     *
+     * @access  public
+     * @return  \Hoathis\Atoum\Test\Asserter\Praspel
+     */
+    public function reset ( ) {
+
+        $this->_specification = new \Hoa\Praspel\Model\Specification();
+
+        return $this;
+    }
+
+    /**
+     * Compute the test verdict.
      *
      * @access  public
      * @return  void
      */
-    public function __construct ( ) {
+    public function verdict ( ) {
 
-        \Hoa\Realdom::setDefaultSampler(new \Hoa\Math\Sampler\Random());
 
-        return;
-    }
-
-    /**
-     * Generate many data from a Praspel description.
-     *
-     * @access  public
-     * @param   string  $description    Description (Praspel description,
-     *                                  without clauses).
-     * @param   int     $maxData        Maximum data to sample.
-     * @return  \Hoa\Praspel\Iterator\Sampler
-     */
-    public function generate ( $description, $maxData ) {
-
-        return new \Hoa\Praspel\Iterator\Sampler(
-            \Hoa\Praspel::interprete('@requires ' . $description . ';')
-                ->getClause('requires'),
-            \Hoa\Praspel\Iterator\Sampler::KEY_AS_VARIABLE_POSITION
-        );
     }
 }
 
