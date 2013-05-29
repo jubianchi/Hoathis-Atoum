@@ -22,7 +22,7 @@
         "source": "http://git.hoa-project.net/"
     },
     "require": {
-        "atoum/atoum": "master",
+        "atoum/atoum": "dev-master",
         "hoa/math"   : "dev-master",
         "hoa/praspel": "dev-master",
         "hoa/realdom": "dev-master"
