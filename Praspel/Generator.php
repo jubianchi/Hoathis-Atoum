@@ -113,8 +113,7 @@ class Generator  {
 
                 $out .= "\n" .
                         $_ . 'public function test ' . $methodName .
-                        ' n°' . ($i + 1) . ' ( ) {' . "\n\n" .
-                        $__ . '$this->with(new ' . $className . '());';
+                        ' n°' . ($i + 1) . ' ( ) {' . "\n\n";
 
                 foreach($path['pre'] as $clause)
                     $out .= str_replace(
@@ -131,7 +130,7 @@ class Generator  {
                     );
 
                 $out .= "\n" .
-                        $__ . '$this->praspel->verdict();' . "\n\n" .
+                        $__ . '$this->praspel->verdict(new ' . $className . '());' . "\n\n" .
                         $__ . 'return;' . "\n" .
                         $_ . '}' . "\n";
             }
