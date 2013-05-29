@@ -114,7 +114,7 @@ class Generator  {
                 $out .= "\n" .
                         $_ . 'public function test ' . $methodName .
                         ' n°' . ($i + 1) . ' ( ) {' . "\n\n" .
-                        $__ . '$self = new ' . $className . '();';
+                        $__ . '$this->with(new ' . $className . '());';
 
                 foreach($path['pre'] as $clause)
                     $out .= str_replace(

@@ -79,6 +79,13 @@ class Praspel {
     protected $_specification = null;
 
     /**
+     * Method name.
+     *
+     * @var \Hoathis\Atoum\Test\Asserter\Praspel mixed
+     */
+    protected $_method        = null;
+
+    /**
      * Callable.
      *
      * @var \Hoa\Core\Consistency\Xcallable object
@@ -103,19 +110,58 @@ class Praspel {
      * Reset the asserter, i.e. create a new fresh specification.
      *
      * @access  public
-     * @param   \Hoa\Core\Consistency\Xcallable  $callable    Callable.
      * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
-    public function reset ( \Hoa\Core\Consistency\Xcallable $callable ) {
+    public function reset ( ) {
 
         $this->_specification = new \Hoa\Praspel\Model\Specification();
-        $this->_callable      = $callable;
-        $this->_rac           = new \Hoa\Praspel(
+        $this->_callable      = null;
+
+        return $this;
+    }
+
+    /**
+     * Set object or class.
+     *
+     * @access  public
+     * @param   mixed  $call    First part of a callable.
+     * @return  mixed
+     */
+    public function with ( $call ) {
+
+        $old             = $this->_callable;
+        $this->_callable = xcallable($call, $this->getMethod());
+        $this->_rac      = new \Hoa\Praspel(
             $this->_specification,
             $this->_callable
         );
 
+        return $old;
+    }
+
+    /**
+     * Set method.
+     *
+     * @access  public
+     * @param   string  $method    Method.
+     * @return  \Hoathis\Atoum\Test\Asserter\Praspel
+     */
+    public function setMethod ( $method ) {
+
+        $this->_method = $method;
+
         return $this;
+    }
+
+    /**
+     * Get method.
+     *
+     * @access  public
+     * @return  string
+     */
+    public function getMethod ( ) {
+
+        return $this->_method;
     }
 
     /**
@@ -126,7 +172,7 @@ class Praspel {
      */
     public function verdict ( ) {
 
-        return true;
+        return $this->getRAC()->evaluate();
     }
 
     /**
@@ -137,7 +183,7 @@ class Praspel {
      */
     public function getRAC ( ) {
 
-        return $this->_praspel;
+        return $this->_rac;
     }
 
     /**

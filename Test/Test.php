@@ -43,6 +43,19 @@ from('Hoathis')
  */
 -> import('Atoum.Test.Asserter.Praspel');
 
+
+from('Hoa')
+
+/**
+ * \Hoa\Math\Sampler\Random
+ */
+-> import('Math.Sampler.Random')
+
+/**
+ * \Hoa\Realdom
+ */
+-> import('Realdom.~');
+
 }
 
 namespace Hoathis\Atoum\Test {
@@ -77,6 +90,7 @@ class Test extends \mageekguy\atoum\test {
                                   \mageekguy\atoum\assertion\manager     $assertionManager       = null,
                                   \Closure                               $reflectionClassFactory = null ) {
 
+        $this->setRealdom();
         $this->setPraspelAsserter();
 
         parent::__construct(
@@ -86,6 +100,19 @@ class Test extends \mageekguy\atoum\test {
             $assertionManager,
             $reflectionClassFactory
         );
+
+        return;
+    }
+
+    /**
+     * Set realistic domains.
+     *
+     * @access  public
+     * @return  void
+     */
+    public function setRealdom ( ) {
+
+        \Hoa\Realdom::setDefaultSampler(new \Hoa\Math\Sampler\Random());
 
         return;
     }
@@ -134,10 +161,9 @@ class Test extends \mageekguy\atoum\test {
                 'Method name “' . $testMethod . '” is not well-formed.');
 
         $testedMethod = $matches[1];
-        $handle       = preg_split(static::getNamespace(), get_class($this));
-        $class        = $handle[count($handle) - 1];
-
-        $this->getPraspelAsserter()->reset(xcallable($class, $testedMethod));
+        $this->getPraspelAsserter()
+             ->reset()
+             ->setMethod($testedMethod);
 
         return $out;
     }
@@ -155,6 +181,10 @@ class Test extends \mageekguy\atoum\test {
         $praspelAsserter = $this->getPraspelAsserter();
 
         $this->getAssertionManager()
+             ->setHandler('with', function ( $value ) use ( $praspelAsserter ) {
+
+                 return $praspelAsserter->with($value);
+             })
              ->setHandler('praspel', function ( ) use ( $praspelAsserter ) {
 
                  return $praspelAsserter;
