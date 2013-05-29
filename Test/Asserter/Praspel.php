@@ -52,7 +52,9 @@ from('Hoa')
 
 namespace Hoathis\Atoum\Test\Asserter {
 
-/**
+use mageekguy\atoum\asserter;
+
+    /**
  * Class \Hoathis\Atoum\Test\Asserter.
  *
  * Praspel asserter. A simple wrapper around \Hoa\Praspel\Model\Specification.
@@ -62,7 +64,7 @@ namespace Hoathis\Atoum\Test\Asserter {
  * @license    New BSD License
  */
 
-class Praspel {
+class Praspel extends asserter {
 
     /**
      * Runtime Assertion Checker.
@@ -85,13 +87,6 @@ class Praspel {
      */
     protected $_method        = null;
 
-    /**
-     * Callable.
-     *
-     * @var \Hoa\Core\Consistency\Xcallable object
-     */
-    protected $_callable      = null;
-
 
 
     /**
@@ -110,33 +105,15 @@ class Praspel {
      * Reset the asserter, i.e. create a new fresh specification.
      *
      * @access  public
+     * @param   string                               Callable.
      * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
-    public function reset ( ) {
+    public function setWith ( $method ) {
 
         $this->_specification = new \Hoa\Praspel\Model\Specification();
-        $this->_callable      = null;
+        $this->_method      = $method;
 
         return $this;
-    }
-
-    /**
-     * Set object or class.
-     *
-     * @access  public
-     * @param   mixed  $call    First part of a callable.
-     * @return  mixed
-     */
-    public function with ( $call ) {
-
-        $old             = $this->_callable;
-        $this->_callable = xcallable($call, $this->getMethod());
-        $this->_rac      = new \Hoa\Praspel(
-            $this->_specification,
-            $this->_callable
-        );
-
-        return $old;
     }
 
     /**
@@ -168,11 +145,19 @@ class Praspel {
      * Compute the test verdict.
      *
      * @access  public
-     * @return  void
+     * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
-    public function verdict ( ) {
+    public function verdict ( $sut ) {
+        $this->_rac = new \Hoa\Praspel(
+            $this->_specification,
+            xcallable($sut, $this->_method)
+        );
 
-        return $this->getRAC()->evaluate();
+        if($this->_rac->evaluate() === false) {
+            $this->fail('Verdict was false');
+        }
+
+        return $this->pass();
     }
 
     /**
@@ -195,17 +180,6 @@ class Praspel {
     public function getSpecification ( ) {
 
         return $this->_specification;
-    }
-
-    /**
-     * Get callable.
-     *
-     * @access  public
-     * @return  \Hoa\Core\Consistency\Xcallable
-     */
-    public function getCallable ( ) {
-
-        return $this->_callable;
     }
 }
 

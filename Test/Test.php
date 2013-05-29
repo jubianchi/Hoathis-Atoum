@@ -90,9 +90,6 @@ class Test extends \mageekguy\atoum\test {
                                   \mageekguy\atoum\assertion\manager     $assertionManager       = null,
                                   \Closure                               $reflectionClassFactory = null ) {
 
-        $this->setRealdom();
-        $this->setPraspelAsserter();
-
         parent::__construct(
             $adapter,
             $annotationExtractor,
@@ -101,6 +98,11 @@ class Test extends \mageekguy\atoum\test {
             $reflectionClassFactory
         );
 
+        $this
+            ->setRealdom()
+            ->setPraspelAsserter()
+        ;
+
         return;
     }
 
@@ -108,13 +110,13 @@ class Test extends \mageekguy\atoum\test {
      * Set realistic domains.
      *
      * @access  public
-     * @return  void
+     * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
     public function setRealdom ( ) {
 
         \Hoa\Realdom::setDefaultSampler(new \Hoa\Math\Sampler\Random());
 
-        return;
+        return $this;
     }
 
     /**
@@ -127,7 +129,7 @@ class Test extends \mageekguy\atoum\test {
     public function setPraspelAsserter ( Asserter\Praspel $praspelAsserter = null ) {
 
         $old                    = $this->_praspelAsserter;
-        $this->_praspelAsserter = $praspelAsserter ?: new Asserter\Praspel();
+        $this->_praspelAsserter = $praspelAsserter ?: new Asserter\Praspel($this->getAsserterGenerator());
 
         return $old;
     }
@@ -156,14 +158,11 @@ class Test extends \mageekguy\atoum\test {
 
         $out = parent::beforeTestMethod($testMethod);
 
-        if(0 === preg_match('#^test (.+?) n°\d+$#u', $testMethod, $matches))
+        if(0 === preg_match('#^test ?(.+?) ?n°\d+$#u', $testMethod, $matches))
             throw new \mageekguy\atoum\test\exceptions\skip(
                 'Method name “' . $testMethod . '” is not well-formed.');
 
-        $testedMethod = $matches[1];
-        $this->getPraspelAsserter()
-             ->reset()
-             ->setMethod($testedMethod);
+        $this->getPraspelAsserter()->setWith($matches[1]);
 
         return $out;
     }
@@ -177,25 +176,21 @@ class Test extends \mageekguy\atoum\test {
      */
     public function setAssertionManager ( \mageekguy\atoum\test\assertion\manager $assertionManager = null ) {
 
-        $out             = parent::setAssertionManager($assertionManager);
-        $praspelAsserter = $this->getPraspelAsserter();
+        $out  = parent::setAssertionManager($assertionManager);
+        $self = $this;
 
         $this->getAssertionManager()
-             ->setHandler('with', function ( $value ) use ( $praspelAsserter ) {
+             ->setHandler('praspel', function ( ) use ( $self ) {
 
-                 return $praspelAsserter->with($value);
+                 return $self->getPraspelAsserter();
              })
-             ->setHandler('praspel', function ( ) use ( $praspelAsserter ) {
+             ->setHandler('requires', function ( ) use ( $self ) {
 
-                 return $praspelAsserter;
+                 return $self->praspel->requires;
              })
-             ->setHandler('requires', function ( ) use ( $praspelAsserter ) {
+             ->setHandler('ensures', function ( ) use ( $self ) {
 
-                 return $praspelAsserter->requires;
-             })
-             ->setHandler('ensures', function ( ) use ( $praspelAsserter ) {
-
-                 return $praspelAsserter->ensures;
+                 return $self->praspel->ensures;
              });
 
         return $out;
