@@ -84,7 +84,14 @@ class Generator  {
         $className = '\\' . $class->getName();
         $compiler  = new Visitor\Compiler();
         $out       = '<?php' . "\n\n" .
-                     'require_once \'hoa://Library/Atoum/Test/Runner.php\';' . "\n\n" .
+                     'namespace {' . "\n\n" .
+                     'require_once __DIR__ . \'/Bootstrap.php\';' . "\n" .
+                     'require_once \'' . $class->getFileName() . '\';' . "\n\n" .
+                     '}' . "\n\n" .
+                     'namespace tests\units' .
+                     (true === $class->inNamespace()
+                         ? '\\' . $class->getNamespace
+                         : '') . ' {' . "\n\n" .
                      'class ' . $class->getName() .
                      ' extends \Hoathis\Atoum\Test {' . "\n";
         $_         = '    ';
@@ -122,15 +129,15 @@ class Generator  {
                         "\n" . $__,
                         $compiler->visit($clause, $methodName)
                     );
-            }
 
-            $out .= "\n" .
-                    $__ . '$this->praspel->verdict();' . "\n\n" .
-                    $__ . 'return;' . "\n" .
-                    $_ . '}' . "\n";
+                $out .= "\n" .
+                        $__ . '$this->praspel->verdict();' . "\n\n" .
+                        $__ . 'return;' . "\n" .
+                        $_ . '}' . "\n";
+            }
         }
 
-        $out .= '}' . "\n";
+        $out .= '}' . "\n\n" . '}' . "\n";
 
         return $out;
     }

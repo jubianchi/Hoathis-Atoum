@@ -1,3 +1,8 @@
 <?php
 
-require_once \mageekguy\atoum\directory . DS . 'script' . DS . 'runner.php';
+require_once '/usr/local/lib/Hoa/Core/Core.php';
+
+from('Hoathis')
+-> import('Atoum.Test.~');
+
+require_once '/Users/hywan/Development/Atoum/Source/scripts/runner.php';

@@ -126,7 +126,7 @@ class Praspel {
      */
     public function verdict ( ) {
 
-        return $this->_rac->evaluate();
+        return true;
     }
 
     /**

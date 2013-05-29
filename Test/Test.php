@@ -34,6 +34,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+namespace {
+
+from('Hoathis')
+
+/**
+ * \Hoathis\Atoum\Test\Asserter\Praspel
+ */
+-> import('Atoum.Test.Asserter.Praspel');
+
+}
+
 namespace Hoathis\Atoum\Test {
 
 /**
@@ -123,7 +134,10 @@ class Test extends \mageekguy\atoum\test {
                 'Method name “' . $testMethod . '” is not well-formed.');
 
         $testedMethod = $matches[1];
-        $this->getPraspelAsserter()->reset(xcallable($this, $testedMethod));
+        $handle       = preg_split(static::getNamespace(), get_class($this));
+        $class        = $handle[count($handle) - 1];
+
+        $this->getPraspelAsserter()->reset(xcallable($class, $testedMethod));
 
         return $out;
     }
