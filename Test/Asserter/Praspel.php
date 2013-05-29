@@ -54,7 +54,7 @@ namespace Hoathis\Atoum\Test\Asserter {
 
 use mageekguy\atoum\asserter;
 
-    /**
+/**
  * Class \Hoathis\Atoum\Test\Asserter.
  *
  * Praspel asserter. A simple wrapper around \Hoa\Praspel\Model\Specification.
@@ -147,10 +147,10 @@ class Praspel extends asserter {
      * @access  public
      * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
-    public function verdict ( $sut ) {
+    public function verdict ( $sut, $method = null ) {
         $this->_rac = new \Hoa\Praspel(
             $this->_specification,
-            xcallable($sut, $this->_method)
+            xcallable($sut, $method ?: $this->_method)
         );
 
         if($this->_rac->evaluate() === false) {
