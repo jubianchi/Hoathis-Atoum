@@ -39,6 +39,11 @@ namespace {
 from('Hoa')
 
 /**
+ * \Hoa\Praspel
+ */
+-> import('Praspel.~')
+
+/**
  * \Hoa\Praspel\Model\Specification
  */
 -> import('Praspel.Model.Specification');
@@ -60,11 +65,25 @@ namespace Hoathis\Atoum\Test\Asserter {
 class Praspel {
 
     /**
+     * Runtime Assertion Checker.
+     *
+     * @var \Hoa\Praspel object
+     */
+    protected $_rac           = null;
+
+    /**
      * Specification.
      *
      * @var \Hoa\Praspel\Model\Specification object
      */
     protected $_specification = null;
+
+    /**
+     * Callable.
+     *
+     * @var \Hoa\Core\Consistency\Xcallable object
+     */
+    protected $_callable      = null;
 
 
 
@@ -84,11 +103,17 @@ class Praspel {
      * Reset the asserter, i.e. create a new fresh specification.
      *
      * @access  public
+     * @param   \Hoa\Core\Consistency\Xcallable  $callable    Callable.
      * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
-    public function reset ( ) {
+    public function reset ( \Hoa\Core\Consistency\Xcallable $callable ) {
 
         $this->_specification = new \Hoa\Praspel\Model\Specification();
+        $this->_callable      = $callable;
+        $this->_rac           = new \Hoa\Praspel(
+            $this->_specification,
+            $this->_callable
+        );
 
         return $this;
     }
@@ -101,7 +126,40 @@ class Praspel {
      */
     public function verdict ( ) {
 
+        return $this->_rac->evaluate();
+    }
 
+    /**
+     * Get Runtime Assertion Checker.
+     *
+     * @access  public
+     * @return  \Hoa\Praspel
+     */
+    public function getRAC ( ) {
+
+        return $this->_praspel;
+    }
+
+    /**
+     * Get specification.
+     *
+     * @access  public
+     * @return  \Hoa\Praspel\Model\Specification
+     */
+    public function getSpecification ( ) {
+
+        return $this->_specification;
+    }
+
+    /**
+     * Get callable.
+     *
+     * @access  public
+     * @return  \Hoa\Core\Consistency\Xcallable
+     */
+    public function getCallable ( ) {
+
+        return $this->_callable;
     }
 }
 

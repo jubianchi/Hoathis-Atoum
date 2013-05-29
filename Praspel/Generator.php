@@ -95,11 +95,6 @@ class Generator  {
 
             $methodName = $method->getName();
 
-            $out .= "\n" .
-                    $_ . 'public function test' . ucfirst($methodName) .
-                    ' ( ) {' . "\n\n" .
-                    $__ . '$self = new ' . $className . '();';
-
             $specification = \Hoa\Praspel::interprete(
                 \Hoa\Praspel::extractFromComment($method->getDocComment())
             );
@@ -107,7 +102,12 @@ class Generator  {
             $coverage = new \Hoa\Praspel\Iterator\Coverage($specification);
             $coverage->setCriteria($coverage::CRITERIA_NORMAL);
 
-            foreach($coverage as $path) {
+            foreach($coverage as $i => $path) {
+
+                $out .= "\n" .
+                        $_ . 'public function test ' . $methodName .
+                        ' n°' . ($i + 1) . ' ( ) {' . "\n\n" .
+                        $__ . '$self = new ' . $className . '();';
 
                 foreach($path['pre'] as $clause)
                     $out .= str_replace(

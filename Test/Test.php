@@ -68,7 +68,7 @@ class Test extends \mageekguy\atoum\test {
 
         $this->setPraspelAsserter();
 
-        parent::_construct(
+        parent::__construct(
             $adapter,
             $annotationExtractor,
             $asserterGenerator,
@@ -112,11 +112,18 @@ class Test extends \mageekguy\atoum\test {
      * @access  public
      * @param   string  $testMethod    Test method name.
      * @return  mixed
+     * @throw   \mageekguy\atoum\test\exceptions\skip
      */
     public function beforeTestMethod ( $testMethod ) {
 
         $out = parent::beforeTestMethod($testMethod);
-        $this->getPraspelAsserter()->reset();
+
+        if(0 === preg_match('#^test (.+?) n°\d+$#u', $testMethod, $matches))
+            throw new \mageekguy\atoum\test\exceptions\skip(
+                'Method name “' . $testMethod . '” is not well-formed.');
+
+        $testedMethod = $matches[1];
+        $this->getPraspelAsserter()->reset(xcallable($this, $testedMethod));
 
         return $out;
     }
@@ -133,11 +140,11 @@ class Test extends \mageekguy\atoum\test {
         $out             = parent::setAssertionManager($assertionManager);
         $praspelAsserter = $this->getPraspelAsserter();
 
-        $this->assertionManager
+        $this->getAssertionManager()
              ->setHandler('praspel', function ( ) use ( $praspelAsserter ) {
 
                  return $praspelAsserter;
-             }
+             })
              ->setHandler('requires', function ( ) use ( $praspelAsserter ) {
 
                  return $praspelAsserter->requires;
