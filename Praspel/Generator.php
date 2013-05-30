@@ -86,7 +86,6 @@ class Generator  {
         $compiler  = new Visitor\Compiler();
         $out       = '<?php' . "\n\n" .
                      'namespace {' . "\n\n" .
-                     'require_once __DIR__ . \'/Bootstrap.php\';' . "\n" .
                      'require_once \'' . $class->getFileName() . '\';' . "\n\n" .
                      '}' . "\n\n" .
                      'namespace tests\units' .
@@ -105,7 +104,7 @@ class Generator  {
             $methodName = $method->getName();
 
             $specification = \Hoa\Praspel::interprete(
-                \Hoa\Praspel::extractFromComment($method->getDocComment())
+                $contract = \Hoa\Praspel::extractFromComment($method->getDocComment())
             );
 
             $coverage = new \Hoa\Praspel\Iterator\Coverage($specification);
@@ -114,6 +113,12 @@ class Generator  {
             foreach($coverage as $i => $path) {
 
                 $out .= "\n" .
+                        $_ . '/**' . "\n" .
+                        $_ . ' * The specification is:' . "\n" .
+                        $_ . ' * ' . "\n" .
+                        $_ . ' * ' .
+                        str_replace("\n", "\n" . $_ . ' * ', $contract) . "\n" .
+                        $_ . ' */' . "\n" .
                         $_ . 'public function test ' . $methodName .
                         ' n°' . ($i + 1) . ' ( ) {' . "\n\n" .
                         $__ . '$this';
