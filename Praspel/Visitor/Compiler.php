@@ -135,6 +135,9 @@ class Compiler implements \Hoa\Visitor\Visit {
                          '[\'' . $identifier . '\'] = \'' . $class . '\')';
             }
         }
+        elseif($element instanceof \Hoa\Praspel\Model\Collection)
+            foreach($element as $el)
+                $out .= $el->accept($this, $handle, $eldnah);
         else
             throw new \Hoa\Core\Exception(
                 '%s is not yet implemented.', 0, get_class($element));
