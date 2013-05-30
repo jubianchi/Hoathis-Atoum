@@ -117,6 +117,24 @@ class Compiler implements \Hoa\Visitor\Visit {
             foreach($element->getPredicates() as $predicate)
                 $out .= $variable . '->predicate(\'' . $predicate . '\')';
         }
+        elseif($element instanceof \Hoa\Praspel\Model\Throwable) {
+
+            $_variable = '$this->' . $element->getName();
+
+            foreach($element->getExceptions() as $identifier => $class) {
+
+                if(true === $first) {
+
+                    $variable = "\n" . '->if(';
+                    $first    = false;
+                }
+                else
+                    $variable = "\n" . '->and(';
+
+                $out  .= $variable . $_variable .
+                         '[\'' . $identifier . '\'] = \'' . $class . '\')';
+            }
+        }
         else
             throw new \Hoa\Core\Exception(
                 '%s is not yet implemented.', 0, get_class($element));

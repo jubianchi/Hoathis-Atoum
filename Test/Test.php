@@ -200,6 +200,10 @@ class Test extends \mageekguy\atoum\test {
              ->setHandler('ensures', function ( ) use ( $self ) {
 
                  return $self->praspel->ensures;
+             })
+             ->setHandler('throwable', function ( ) use ( $self ) {
+
+                 return $self->praspel->throwable;
              });
 
         return $out;

@@ -108,9 +108,14 @@ class Generator  {
             );
 
             $coverage = new \Hoa\Praspel\Iterator\Coverage($specification);
-            $coverage->setCriteria($coverage::CRITERIA_NORMAL);
+            $coverage->setCriteria(
+                $coverage::CRITERIA_NORMAL
+              | $coverage::CRITERIA_EXCEPTIONAL
+            );
 
-            foreach($coverage as $i => $path) {
+            $i = 1;
+
+            foreach($coverage as $path) {
 
                 $out .= "\n" .
                         $_ . '/**' . "\n" .
@@ -120,21 +125,23 @@ class Generator  {
                         str_replace("\n", "\n" . $_ . ' * ', $contract) . "\n" .
                         $_ . ' */' . "\n" .
                         $_ . 'public function test ' . $methodName .
-                        ' n°' . ($i + 1) . ' ( ) {' . "\n\n" .
+                        ' n°' . $i++ . ' ( ) {' . "\n\n" .
                         $__ . '$this';
 
-                foreach($path['pre'] as $i => $clause)
+                $j = 0;
+
+                foreach($path['pre'] as $clause)
                     $out .= str_replace(
                         "\n",
                         "\n" . $___,
-                        $compiler->visit($clause, $methodName, $i)
+                        $compiler->visit($clause, $methodName, $j++)
                     );
 
                 foreach($path['post'] as $clause)
                     $out .= str_replace(
                         "\n",
                         "\n" . $___,
-                        $compiler->visit($clause, $methodName)
+                        $compiler->visit($clause, $methodName, $j++)
                     );
 
                 $out .= "\n" . $___ . '->then';
