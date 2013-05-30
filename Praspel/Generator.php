@@ -66,7 +66,8 @@ namespace Hoathis\Atoum\Praspel {
  * Generate tests based on a Praspel-annotated class.
  *
  * @author     Ivan Enderlin <ivan.enderlin@hoa-project.net>
- * @copyright  Copyright © 2007-2013 Ivan Enderlin.
+ * @author     Julien Bianchi <julien.bianchi@hoa-project.net>
+ * @copyright  Copyright © 2007-2013 Ivan Enderlin, Julien Bianchi.
  * @license    New BSD License
  */
 

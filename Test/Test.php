@@ -66,12 +66,19 @@ namespace Hoathis\Atoum\Test {
  * Extend \mageekguy\atoum\test.
  *
  * @author     Ivan Enderlin <ivan.enderlin@hoa-project.net>
- * @copyright  Copyright © 2007-2013 Ivan Enderlin.
+ * @author     Julien Bianchi <julien.bianchi@hoa-project.net>
+ * @copyright  Copyright © 2007-2013 Ivan Enderlin, Julien Bianchi.
  * @license    New BSD License
  */
 
 class Test extends \mageekguy\atoum\test {
-    const testMethodFormat = '#^test ?(?P<method>.+?) ?n°\d+$#u';
+
+    /**
+     * Method name.
+     *
+     * @const string
+     */
+    const TEST_METHOD_NAME = '#^test ?(?<method>.+?) ?n°\d+$#u';
 
     /**
      * Praspel asserter.
@@ -99,10 +106,8 @@ class Test extends \mageekguy\atoum\test {
             $reflectionClassFactory
         );
 
-        $this
-            ->setRealdom()
-            ->setPraspelAsserter()
-        ;
+        $this->setRealdom();
+        $this->setPraspelAsserter();
 
         return;
     }
@@ -111,7 +116,7 @@ class Test extends \mageekguy\atoum\test {
      * Set realistic domains.
      *
      * @access  public
-     * @return  \Hoathis\Atoum\Test\Asserter\Praspel
+     * @return  \Hoathis\Atoum\Test
      */
     public function setRealdom ( ) {
 
@@ -130,7 +135,8 @@ class Test extends \mageekguy\atoum\test {
     public function setPraspelAsserter ( Asserter\Praspel $praspelAsserter = null ) {
 
         $old                    = $this->_praspelAsserter;
-        $this->_praspelAsserter = $praspelAsserter ?: new Asserter\Praspel($this->getAsserterGenerator());
+        $asserterGenerator      = $this->getAsserterGenerator();
+        $this->_praspelAsserter = $praspelAsserter ?: new Asserter\Praspel($asserterGenerator);
 
         return $old;
     }
@@ -159,9 +165,11 @@ class Test extends \mageekguy\atoum\test {
 
         $out = parent::beforeTestMethod($testMethod);
 
-        if(0 === preg_match(static::testMethodFormat, $testMethod, $matches) || isset($matches['method']) === false)
+        if(   0 === preg_match(static::TEST_METHOD_NAME, $testMethod, $matches)
+           || empty($matches['method']))
             throw new \mageekguy\atoum\test\exceptions\skip(
-                'Method name “' . $testMethod . '” is not well-formed.');
+                'Method name “' . $testMethod . '” is not well-formed ' .
+                '(must match ' . static::TEST_METHOD_NAME . ').');
 
         $this->getPraspelAsserter()->setWith($matches['method']);
 

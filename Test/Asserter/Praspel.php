@@ -52,19 +52,18 @@ from('Hoa')
 
 namespace Hoathis\Atoum\Test\Asserter {
 
-use mageekguy\atoum\asserter;
-
 /**
  * Class \Hoathis\Atoum\Test\Asserter.
  *
  * Praspel asserter. A simple wrapper around \Hoa\Praspel\Model\Specification.
  *
  * @author     Ivan Enderlin <ivan.enderlin@hoa-project.net>
- * @copyright  Copyright © 2007-2013 Ivan Enderlin.
+ * @author     Julien Bianchi <julien.bianchi@hoa-project.net>
+ * @copyright  Copyright © 2007-2013 Ivan Enderlin, Julien Bianchi.
  * @license    New BSD License
  */
 
-class Praspel extends asserter {
+class Praspel extends \mageekguy\atoum\asserter {
 
     /**
      * Runtime Assertion Checker.
@@ -105,27 +104,13 @@ class Praspel extends asserter {
      * Reset the asserter, i.e. create a new fresh specification.
      *
      * @access  public
-     * @param   string                               Callable.
+     * @param   string   $method    Callable.
      * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
     public function setWith ( $method ) {
 
         $this->_specification = new \Hoa\Praspel\Model\Specification();
-        $this->_method      = $method;
-
-        return $this;
-    }
-
-    /**
-     * Set method.
-     *
-     * @access  public
-     * @param   string  $method    Method.
-     * @return  \Hoathis\Atoum\Test\Asserter\Praspel
-     */
-    public function setMethod ( $method ) {
-
-        $this->_method = $method;
+        $this->_method        = $method;
 
         return $this;
     }
@@ -145,17 +130,19 @@ class Praspel extends asserter {
      * Compute the test verdict.
      *
      * @access  public
+     * @param   mixed    $call    Callable (first part).
+     * @param   string   $able    Callable (second part).
      * @return  \Hoathis\Atoum\Test\Asserter\Praspel
      */
-    public function verdict ( $sut, $method = null ) {
+    public function verdict ( $call, $able = null ) {
+
         $this->_rac = new \Hoa\Praspel(
             $this->_specification,
-            xcallable($sut, $method ?: $this->_method)
+            xcallable($call, $able ?: $this->getMethod())
         );
 
-        if($this->_rac->evaluate() === false) {
+        if(false === $this->_rac->evaluate())
             $this->fail('Verdict was false');
-        }
 
         return $this->pass();
     }
