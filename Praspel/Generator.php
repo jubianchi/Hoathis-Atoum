@@ -113,17 +113,23 @@ class Generator  {
               | $coverage::CRITERIA_EXCEPTIONAL
             );
 
+            $out .= "\n" . $_ . '/**' . "\n" .
+                    $_ . ' * Method: ' .
+                    ($full = $className . '::' . $methodName) . '.' . "\n" .
+                    $_ . ' * Location: ' . $method->getFileName() .
+                    '#' . $method->getStartLine() . '.' . "\n" .
+                    $_ . ' * Hash: ' . md5($full) . '.' . "\n" .
+                    $_ . ' * Specification:' . "\n" .
+                    $_ . ' * ' . "\n" .
+                    $_ . ' *     ' .
+                    str_replace("\n", "\n" . $_ . ' *     ', $contract) . "\n" .
+                    $_ . ' */' . "\n";
+
             $i = 1;
 
             foreach($coverage as $path) {
 
                 $out .= "\n" .
-                        $_ . '/**' . "\n" .
-                        $_ . ' * The specification is:' . "\n" .
-                        $_ . ' * ' . "\n" .
-                        $_ . ' * ' .
-                        str_replace("\n", "\n" . $_ . ' * ', $contract) . "\n" .
-                        $_ . ' */' . "\n" .
                         $_ . 'public function test ' . $methodName .
                         ' n°' . $i++ . ' ( ) {' . "\n\n" .
                         $__ . '$this';
