@@ -71,7 +71,7 @@ namespace Hoathis\Atoum\Test {
  */
 
 class Test extends \mageekguy\atoum\test {
-    const testMethodFormat = '#^test ?(.+?) ?n°\d+$#u';
+    const testMethodFormat = '#^test ?(?P<method>.+?) ?n°\d+$#u';
 
     /**
      * Praspel asserter.
@@ -159,11 +159,11 @@ class Test extends \mageekguy\atoum\test {
 
         $out = parent::beforeTestMethod($testMethod);
 
-        if(0 === preg_match(static::testMethodFormat, $testMethod, $matches))
+        if(0 === preg_match(static::testMethodFormat, $testMethod, $matches) || isset($matches['method']) === false)
             throw new \mageekguy\atoum\test\exceptions\skip(
                 'Method name “' . $testMethod . '” is not well-formed.');
 
-        $this->getPraspelAsserter()->setWith($matches[1]);
+        $this->getPraspelAsserter()->setWith($matches['method']);
 
         return $out;
     }
