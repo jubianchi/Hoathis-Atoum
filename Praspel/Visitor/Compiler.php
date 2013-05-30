@@ -73,39 +73,49 @@ class Compiler implements \Hoa\Visitor\Visit {
 
         $out    = null;
         $method = &$handle;
+        $first  = 0 === $eldnah;
 
         if($element instanceof \Hoa\Praspel\Model\Declaration) {
 
-            $variable = "\n" . '$this->' . $element->getName();
+            $_variable = '$this->' . $element->getName();
 
             foreach($element as $name => $var) {
 
-                $start = $variable . '[\'' . $name . '\']';
-                $out  .= $start;
+                if(true === $first) {
+
+                    $variable = "\n" . '->if(';
+                    $first    = false;
+                }
+                else
+                    $variable = "\n" . '->and(';
+
+                $variable  .= $_variable;
+                $start      = $variable . '[\'' . $name . '\']';
+                $out       .= $start;
 
                 if(null === $alias = $var->getAlias())
-                    $out .= '->in = ' . $var->getDomains() . ';';
+                    $out .= '->in = ' . $var->getDomains() . ')';
                 else
-                    $out .= '->domainof(\'' . $alias . '\');';
+                    $out .= '->domainof(\'' . $alias . '\')';
 
                 $constraints = $var->getConstraints();
 
                 if(isset($constraints['is']))
                     $out .= $start . '->is(\'' .
-                            implode('\', \'', $constraints['is']) . '\');';
+                            implode('\', \'', $constraints['is']) . '\')';
 
                 if(isset($constraints['contains']))
                     foreach($constraints['contains'] as $contains)
-                        $out .= $start . '->contains(' . $contains . ');';
+                        $out .= $start . '->contains(' . $contains . ')';
 
                 if(isset($constraints['key']))
                     foreach($constraints['key'] as $pairs)
                         $out .= $start . '->key(' . $pairs[0] . ')->in = ' .
-                                $pairs[1] . ';';
+                                $pairs[1];
             }
 
             foreach($element->getPredicates() as $predicate)
-                $out .= $variable . '->predicate(\'' . $predicate . '\');';
+                $out .= $variable . '->predicate(\'' . $predicate . '\')';
         }
         else
             throw new \Hoa\Core\Exception(

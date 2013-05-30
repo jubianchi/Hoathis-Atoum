@@ -98,6 +98,7 @@ class Generator  {
         $_         = '    ';
         $__        = $_ . $_;
         $___       = $_ . $_ . $_;
+        $____      = $_ . $_ . $_ . $_;
 
         foreach($class->getMethods() as $method) {
 
@@ -114,24 +115,27 @@ class Generator  {
 
                 $out .= "\n" .
                         $_ . 'public function test ' . $methodName .
-                        ' n°' . ($i + 1) . ' ( ) {' . "\n\n";
+                        ' n°' . ($i + 1) . ' ( ) {' . "\n\n" .
+                        $__ . '$this';
 
-                foreach($path['pre'] as $clause)
+                foreach($path['pre'] as $i => $clause)
                     $out .= str_replace(
                         "\n",
-                        "\n" . $__,
-                        $compiler->visit($clause, $methodName)
+                        "\n" . $___,
+                        $compiler->visit($clause, $methodName, $i)
                     );
 
                 foreach($path['post'] as $clause)
                     $out .= str_replace(
                         "\n",
-                        "\n" . $__,
+                        "\n" . $___,
                         $compiler->visit($clause, $methodName)
                     );
 
+                $out .= "\n" . $___ . '->then';
+
                 $out .= "\n" .
-                        $__ . '$this->praspel->verdict(new ' . $className . '());' . "\n\n" .
+                        $____ . '->praspel->verdict(new ' . $className . '());' . "\n\n" .
                         $__ . 'return;' . "\n" .
                         $_ . '}' . "\n";
             }
