@@ -39,11 +39,6 @@ namespace {
 from('Hoa')
 
 /**
- * \Hoa\Math\Sampler\Random
- */
--> import('Math.Sampler.Random')
-
-/**
  * \Hoa\Realdom
  */
 -> import('Realdom.~')
@@ -51,12 +46,11 @@ from('Hoa')
 /**
  * \Hoa\Praspel
  */
--> import('Praspel.~')
+-> import('Praspel.~');
 
-/**
- * \Hoa\Praspel\Iterator\Sampler
- */
--> import('Praspel.Iterator.Sampler');
+from('Hoathis')
+
+-> import('Atoum.Test.Provider.Generators.*');
 
 }
 
@@ -72,7 +66,14 @@ namespace Hoathis\Atoum\Test\Provider {
  * @license    New BSD License
  */
 
-class Praspel implements \mageekguy\atoum\test\provider {
+class Praspel {
+
+	/**
+	 * Assertion manager.
+	 *
+	 * @var \mageekguy\atoum\test\assertion\manager object
+	 */
+	protected $_assertionManager = null;
 
     /**
      * Constructor.
@@ -84,26 +85,86 @@ class Praspel implements \mageekguy\atoum\test\provider {
 
         \Hoa\Realdom::setDefaultSampler(new \Hoa\Math\Sampler\Random());
 
+		$this->setAssertionManager();
+
         return;
     }
 
-    /**
-     * Generate many data from a Praspel description.
-     *
-     * @access  public
-     * @param   string  $description    Description (Praspel description,
-     *                                  without clauses).
-     * @param   int     $maxData        Maximum data to sample.
-     * @return  \Hoa\Praspel\Iterator\Sampler
-     */
-    public function generate ( $description, $maxData ) {
+	public function __get($property)
+	{
+		return $this->_assertionManager->invoke($property);
+	}
 
-        return new \Hoa\Praspel\Iterator\Sampler(
-            \Hoa\Praspel::interprete('@requires ' . $description . ';')
-                ->getClause('requires'),
-            \Hoa\Praspel\Iterator\Sampler::KEY_AS_VARIABLE_POSITION
-        );
-    }
+	public function __call($method, array $arguments)
+	{
+		return $this->_assertionManager->invoke($method, $arguments);
+	}
+
+	public function setAssertionManager ( \mageekguy\atoum\test\assertion\manager $assertionManager = null ) {
+
+		$old  = $this->_assertionManager;
+		$self = $this;
+
+		$this->_assertionManager = $assertionManager ?: new \mageekguy\atoum\test\assertion\manager();
+
+		$this->_assertionManager
+			->setDefaultHandler($defaultHandler = function ( $event, $args ) {
+
+				$classname = __NAMESPACE__ . '\\Generators\\' . $event;
+
+				if(class_exists($classname)) {
+					$reflection = new \ReflectionClass($classname);
+					return $reflection->newInstanceArgs($args);
+				}
+			})
+			->setHandler('boundinteger', $boundIntegerHandler = function ( ) use ( $self ) {
+
+				return call_user_func_array(array($self, 'BoundInteger'), func_get_args());
+			})
+			->setHandler('boundint', $boundIntegerHandler)
+			->setHandler('smallinteger', $smallIntegerHandler = function ( ) use ( $self ) {
+
+				return call_user_func_array(array($self, 'SmallInteger'), func_get_args());
+			})
+			->setHandler('smallint', $smallIntegerHandler)
+			->setHandler('integer', $intHandler = function ( ) use ( $self ) {
+
+				return call_user_func_array(array($self, 'Integer'), func_get_args());
+			})
+			->setHandler('int', $intHandler)
+			->setHandler('boolean', $boolHandler = function ( ) use ( $self ) {
+
+				return call_user_func_array(array($self, 'Boolean'), func_get_args());
+			})
+			->setHandler('bool', $boolHandler)
+			->setHandler('Array', $arrayHandler = function ( ) use ( $defaultHandler ) {
+
+				return $defaultHandler('PhpArray', func_get_args());
+			})
+			->setHandler('array', $arrayHandler)
+			->setHandler('arr', $arrayHandler)
+			->setHandler('string', $stringHandler = function ( ) use ( $self ) {
+
+				return call_user_func_array(array($self, 'String'), func_get_args());
+			})
+			->setHandler('str', $stringHandler)
+			->setHandler('expression', $exprHandler = function ( ) use ( $self ) {
+				return call_user_func_array(array($self, 'Expression'), func_get_args());
+			})
+			->setHandler('expr', $exprHandler)
+			->setHandler('provide', function ( \Hoathis\Atoum\Test\Provider\Generator $generator, $size = 10 ) {
+				$data = array();
+
+				while(sizeof($data) < $size) {
+					$data[] = $generator->generate();
+				}
+
+			return $data;
+			});
+
+
+		return $old;
+	}
 }
 
 }

@@ -25,7 +25,8 @@
         "atoum/atoum": "dev-master",
         "hoa/math"   : "dev-master",
         "hoa/praspel": "dev-master",
-        "hoa/realdom": "dev-master"
+        "hoa/realdom": "dev-master",
+        "hoa/console": "dev-master"
     },
     "minimum-stability": "dev"
 }

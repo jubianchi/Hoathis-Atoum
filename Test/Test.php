@@ -41,7 +41,12 @@ from('Hoathis')
 /**
  * \Hoathis\Atoum\Test\Asserter\Praspel
  */
--> import('Atoum.Test.Asserter.Praspel');
+-> import('Atoum.Test.Asserter.Praspel')
+
+/**
+ * \Hoathis\Atoum\Test\Provider\Praspel
+ */
+-> import('Atoum.Test.Provider.Praspel');
 
 
 from('Hoa')
@@ -87,6 +92,13 @@ class Test extends \mageekguy\atoum\test {
      */
     protected $_praspelAsserter = null;
 
+	/**
+	 * Praspel asserter.
+	 *
+	 * @var \Hoathis\Atoum\Test\Asserter\Praspel object
+	 */
+	protected $_praspelProvider = null;
+
 
 
     /**
@@ -108,6 +120,7 @@ class Test extends \mageekguy\atoum\test {
 
         $this->setRealdom();
         $this->setPraspelAsserter();
+		$this->setPraspelProvider();
 
         return;
     }
@@ -151,6 +164,33 @@ class Test extends \mageekguy\atoum\test {
 
         return $this->_praspelAsserter;
     }
+
+	/**
+	 * Set Praspel provider.
+	 *
+	 * @access  public
+	 * @param   \Hoathis\Atoum\Test\Provider\Praspel  $praspelProvider    Praspel provider.
+	 * @return  \Hoathis\Atoum\Test\Provider\Praspel
+	 */
+	public function setPraspelProvider ( Provider\Praspel $praspelProvider = null ) {
+
+		$old                    = $this->_praspelProvider;
+		$asserterGenerator      = $this->getAsserterGenerator();
+		$this->_praspelProvider = $praspelProvider ?: new Provider\Praspel($asserterGenerator);
+
+		return $old;
+	}
+
+	/**
+	 * Get Praspel provider.
+	 *
+	 * @access  public
+	 * @return  \Hoathis\Atoum\Test\Provider\Praspel
+	 */
+	public function getPraspelProvider ( ) {
+
+		return $this->_praspelProvider;
+	}
 
     /**
      * Reset Praspel asserter before each test execution.
@@ -204,7 +244,11 @@ class Test extends \mageekguy\atoum\test {
              ->setHandler('throwable', function ( ) use ( $self ) {
 
                  return $self->praspel->throwable;
-             });
+             })
+			 ->setHandler('generator', function ( ) use ( $self ) {
+
+				return $self->getPraspelProvider();
+			 });
 
         return $out;
     }
